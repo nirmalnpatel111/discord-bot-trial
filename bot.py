@@ -35,15 +35,17 @@ user_sessions = {}  # user_id: {event_id, task, start_time, location}
 
 def get_google_service(api_name, version):
     creds = None
+
     if os.path.exists('token.pkl'):
         with open('token.pkl', 'rb') as token:
             creds = pickle.load(token)
+
+    # Raise error instead of trying to login again (which fails on Render)
     if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        creds = flow.run_console()
-        with open('token.pkl', 'wb') as token:
-            pickle.dump(creds, token)
+        raise Exception("Missing or expired token.pkl. Please generate it locally and upload to Render.")
+
     return build(api_name, version, credentials=creds)
+
 
 @client.event
 async def on_ready():
@@ -178,3 +180,4 @@ def log_to_sheet(name, start, end, location):
 webserver.keep_alive()
 
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
+
