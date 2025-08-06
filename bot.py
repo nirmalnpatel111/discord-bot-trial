@@ -40,7 +40,7 @@ def get_google_service(api_name, version):
             creds = pickle.load(token)
     if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
+        creds = flow.run_console()
         with open('token.pkl', 'wb') as token:
             pickle.dump(creds, token)
     return build(api_name, version, credentials=creds)
@@ -176,4 +176,5 @@ def log_to_sheet(name, start, end, location):
 
 
 webserver.keep_alive()
+
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
